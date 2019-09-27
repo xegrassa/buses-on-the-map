@@ -14,5 +14,5 @@ let logLevelStr = localStorage.getItem('logLevel') || '';
 Поменять настройки websocket
 
 ```js
-let websocketAddress = localStorage.getItem('websocket') || 'ws://127.0.0.1:8080/ws';
+let websocketAddress = localStorage.getItem('websocket') || 'ws://127.0.0.1:8000/ws';
 ```
