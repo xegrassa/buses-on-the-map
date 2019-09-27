@@ -34,25 +34,6 @@
   <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
 
   <script type="text/javascript">
-    function selectLogLevel(){
-      const logLevels = {
-        'trace': log.levels.TRACE,
-        'debug': log.levels.DEBUG,
-        'info': log.levels.INFO,
-        'warn': log.levels.WARN,
-      }
-      const logLevelStr = localStorage.getItem('logLevel') || '';
-
-      const level = logLevels[logLevelStr.toLowerCase()];
-      return (level === undefined) ? log.levels.ERROR : level;
-    }
-
-    var logLevel = selectLogLevel();
-    log.setLevel(logLevel);
-    log.info(`Set log level to ${logLevel}`);
-  </script>
-
-  <script type="text/javascript">
     const serverUpdateMsgScheme = {
       buses: {presence: true, type: 'array'},
     };

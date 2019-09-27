@@ -1,15 +1,9 @@
 Как установить уровень логгирования:
 
 ```js
-const logLevels = {
-  'trace': log.levels.TRACE,
-  'debug': log.levels.DEBUG,
-  'info': log.levels.INFO,
-  'warn': log.levels.WARN,
-}
-let logLevelStr = localStorage.getItem('logLevel') || '';
+log.setLevel('debug')
 ```
-
+Настройка логгирования сохраняется в localStorage и поэтому сохранится после перезагрузки страницы.
 
 Поменять настройки websocket
 
