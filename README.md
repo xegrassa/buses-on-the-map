@@ -40,8 +40,8 @@
 
 ```js
 {
-  msgType: "newBounds",
-  data: {
+  "msgType": "newBounds",
+  "data": {
     "east_lng": 37.65563964843751,
     "north_lat": 55.77367652953477,
     "south_lat": 55.72628839374007,
