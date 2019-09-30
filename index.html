@@ -28,6 +28,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-providers/1.9.0/leaflet-providers.min.js" integrity="sha256-DeMZ/oWlg1cLllekEAI8FfVwhvE2Qsuac66qMoo6vzw=" crossorigin="anonymous"></script>
   <script src='https://unpkg.com/leaflet.marker.slideto@0.2.0/Leaflet.Marker.SlideTo.js'></script>
   <script src="https://unpkg.com/beautifymarker@1.0.7/leaflet-beautify-marker-icon.js"></script>
+  <script src="https://unpkg.com/leaflet-control-custom@1.0.0/Leaflet.Control.Custom.js"></script>
+
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/loglevel/1.6.4/loglevel.min.js" integrity="sha256-ACTlnmNCkOooSKkPCKYbiex8WLE82aeiN+Z9ElZag5Q=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js" integrity="sha256-xgP6yiUGsRLSmsC8oW0KrRWiK2ek7cSBznIDMEcdp/U=" crossorigin="anonymous"></script>
@@ -35,6 +37,7 @@
 
   <script type="text/javascript">
     const serverUpdateMsgScheme = {
+      msgType: {presence: true, type: 'string', format: /Buses/},
       buses: {presence: true, type: 'array'},
     };
     const busInfoScheme = {
@@ -110,10 +113,42 @@
 
     const centerOfMoscow = [55.75, 37.6];
     var map = L.map('mapid', {
-      minZoom: 15,  // автобусов слишком много, нельзя смотреть всю Москву разом
-    }).setView(centerOfMoscow, 15);
+      minZoom: 14,  // автобусов слишком много, нельзя смотреть всю Москву разом
+    }).setView(centerOfMoscow, 14);
 
     L.tileLayer.provider('OpenStreetMap.Mapnik').addTo(map);
+
+    L.control.custom({
+        position: 'bottomright',
+        content: `<input name="address" type="text" value="${websocketAddress}"/>`+
+                 '<button type="button" class="btn btn-info" id="save-btn">Сохранить</button>' +
+                 '<br/>' +
+                 `<label>` +
+                   `<input name="debug" type="checkbox" ${log.getLevel()<=1 && 'checked'}/>` +
+                 'отладка' +
+                 '</label>',
+        classes: 'btn-group-vertical btn-group-sm',
+        style: {
+          padding: '10px',
+          background: 'rgba(255, 255, 255, 0.7)',
+        },
+        events:
+        {
+          click: function(event)
+          {
+            if (event.target.name == 'debug'){
+              log.setLevel(event.target.checked && 'debug' || 'warn');
+            }
+
+            if (event.target.id == 'save-btn'){
+              const newWebsocketAddress = document.getElementsByName("address")[0].value;
+              localStorage.setItem('websocket', newWebsocketAddress)
+              document.location.reload();
+            }
+          },
+        }
+    })
+    .addTo(map);
 
     const busMarkers = {};
 
