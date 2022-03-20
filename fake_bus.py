@@ -5,7 +5,7 @@ from itertools import cycle
 import trio
 from trio_websocket import open_websocket_url
 
-SERVER_URL = 'ws://127.0.0.1:8000'
+SERVER_URL = 'ws://127.0.0.1:8080'
 
 
 def load_routes(directory_path='routes'):
@@ -35,7 +35,7 @@ async def run_bus(url, route, bus_id, sem):
 
 
 async def main():
-    sem = trio.Semaphore(20)
+    sem = trio.Semaphore(2)
     async with trio.open_nursery() as nursery:
         for route in load_routes():
             async with sem:
