@@ -1,8 +1,9 @@
 import json
-from functools import partial
 import logging
+from functools import partial
+
 import trio
-from trio_websocket import serve_websocket, ConnectionClosed
+from trio_websocket import ConnectionClosed, serve_websocket
 
 logger = logging.getLogger(__name__)
 buses = {}
