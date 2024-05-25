@@ -6,9 +6,11 @@
 
 ## Как запустить
 
-- Скачайте код
+- Склонируйте репозиторий
+- `pip install -r requirements.txt`
+- `python server.py`
+- `python fake_bus.py`
 - Откройте в браузере файл index.html
-
 
 ## Настройки
 
