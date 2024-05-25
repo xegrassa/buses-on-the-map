@@ -100,5 +100,5 @@ async def main(
 if __name__ == "__main__":
     try:
         main(_anyio_backend="trio")
-    except trio_websocket.HandshakeError as e:
+    except* trio_websocket.HandshakeError as e:
         logger.critical("Не удалось соединиться с сервером")
