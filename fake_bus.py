@@ -102,3 +102,6 @@ if __name__ == "__main__":
         main(_anyio_backend="trio")
     except* trio_websocket.HandshakeError as e:
         logger.critical("Не удалось соединиться с сервером")
+    except* KeyboardInterrupt as e:
+        logger.info("Скрипт остановлен")
+
