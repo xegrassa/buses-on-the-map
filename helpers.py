@@ -1,7 +1,11 @@
 import json
-from json import JSONDecodeError
 import logging
 import os
+from typing import Generator
+
+from pydantic import ValidationError
+from schemas import WindowBoundsSchema, BusSchema
+
 from functools import wraps
 import trio
 import trio_websocket
@@ -10,11 +14,11 @@ from wsproto.utilities import LocalProtocolError
 logger = logging.getLogger(__name__)
 
 
-def generate_bus_id(route_id, bus_index):
+def generate_bus_id(route_id, bus_index) -> str:
     return f"{route_id}-{bus_index}"
 
 
-def load_routes(directory_path="routes"):
+def load_routes(directory_path="routes") -> Generator[str, None, None]:
     """Загружает маршруты автобусов из папки с маршрутами.
 
     Маршруты это json файл определенного формата
@@ -54,11 +58,11 @@ def relaunch_on_disconnect(timeout: int):
             while True:
                 try:
                     await async_function(*args, **kwargs)
-                except trio_websocket.ConnectionClosed as e:
+                except* trio_websocket.ConnectionClosed as e:
                     logger.critical("Пропало соединение WebSocket")
-                except trio_websocket.HandshakeError as e:
+                except* trio_websocket.HandshakeError as e:
                     logger.info("Не удалось соединиться с сервером")
-                except LocalProtocolError as e:
+                except* LocalProtocolError as e:
                     logger.info("Не удалось соединиться с браузером")
                 logger.info(f"Попытка переподключения через: {timeout} сек")
                 await trio.sleep(timeout)
@@ -68,43 +72,23 @@ def relaunch_on_disconnect(timeout: int):
     return decorator
 
 
-def validate_new_bounds_message(msg: str) -> str | None:
-    error_msg = {"msgType": "Errors", "errors": []}
+def validate_new_bounds(msg: str) -> tuple[WindowBoundsSchema | None, str | None]:
     try:
-        new_bounds = json.loads(msg)
-    except JSONDecodeError:
-        error_msg["errors"].append("Requires valid JSON")
-        return json.dumps(error_msg)
+        received_bounds = WindowBoundsSchema.model_validate_json(msg)
+    except ValidationError as e:
+        logger.error(f"Невалидное сообщение границ окна Браузера: {e}")
+        error_msg = {"msgType": "Errors", "errors": e.errors()}
+        return None, json.dumps(error_msg)
 
-    if "south_lat" not in new_bounds:
-        error_msg["errors"].append("Requires south_lat specified")
-    if "north_lat" not in new_bounds:
-        error_msg["errors"].append("Requires north_lat specified")
-    if "west_lng" not in new_bounds:
-        error_msg["errors"].append("Requires west_lng specified")
-    if "east_lng" not in new_bounds:
-        error_msg["errors"].append("Requires east_lng specified")
-
-    if error_msg["errors"]:
-        return json.dumps(error_msg)
+    return received_bounds, None
 
 
-def validate_bus_message(msg: str) -> str | None:
-    error_msg = {"msgType": "Errors", "errors": []}
+def validate_bus_position(msg: str) -> tuple[BusSchema | None, str | None]:
     try:
-        new_bounds = json.loads(msg)
-    except JSONDecodeError:
-        error_msg["errors"].append("Requires valid JSON")
-        return json.dumps(error_msg)
+        bus_position = BusSchema.model_validate_json(msg)
+    except ValidationError as e:
+        logger.error(f"Невалидное сообщение границ окна Браузера: {e}")
+        error_msg = {"msgType": "Errors", "errors": e.errors()}
+        return None, json.dumps(error_msg)
 
-    if "busId" not in new_bounds:
-        error_msg["errors"].append("Requires south_lat specified")
-    if "lat" not in new_bounds:
-        error_msg["errors"].append("Requires north_lat specified")
-    if "lng" not in new_bounds:
-        error_msg["errors"].append("Requires west_lng specified")
-    if "route" not in new_bounds:
-        error_msg["errors"].append("Requires east_lng specified")
-
-    if error_msg["errors"]:
-        return json.dumps(error_msg)
+    return bus_position, None

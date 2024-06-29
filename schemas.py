@@ -1,6 +1,10 @@
 from dataclasses import dataclass
+from pydantic import BaseModel
+from enum import Enum
 
 
+############################
+# DTO ######################
 @dataclass
 class Bus:
     busId: str
@@ -26,3 +30,30 @@ class WindowBounds:
         self.north_lat = north_lat
         self.west_lng = west_lng
         self.east_lng = east_lng
+
+
+############################
+# Validation Schemas #######
+class MessageType(str, Enum):
+    new_bounds = 'newBounds'
+    buses = 'Buses'
+    errors = 'Errors'
+
+
+class CoordinatesSchema(BaseModel):
+    south_lat: float
+    north_lat: float
+    west_lng: float
+    east_lng: float
+
+
+class WindowBoundsSchema(BaseModel):
+    msgType: MessageType
+    data: CoordinatesSchema
+
+
+class BusSchema(BaseModel):
+    busId: str
+    lat: float
+    lng: float
+    route: str
