@@ -22,7 +22,10 @@ async def run_bus(send_channel: MemorySendChannel, route, bus_id, refresh_timeou
     point_count = len(route["coordinates"])
     start_point = random.randint(0, point_count - 1)
     coordinates = islice(cycle(route["coordinates"]), start_point, None)
-    messages = ({"busId": bus_id, "lat": lat, "lng": lng, "route": route["name"]} for lat, lng in coordinates)
+    messages = (
+        {"busId": bus_id, "lat": lat, "lng": lng, "route": route["name"]}
+        for lat, lng in coordinates
+    )
     async with send_channel:
         for msg in messages:
             await send_channel.send(json.dumps(msg, ensure_ascii=False))
@@ -40,7 +43,9 @@ async def send_updates(server_address: str, receive_channel: MemoryReceiveChanne
 
 
 @click.command()
-@click.option("--server", default="ws://127.0.0.1:8080", help="Host:Port. ex: 127.0.0.1:8080")
+@click.option(
+    "--server", default="ws://127.0.0.1:8080", help="Host:Port. ex: 127.0.0.1:8080"
+)
 @click.option(
     "--emulator_id",
     default="",
@@ -86,9 +91,15 @@ async def main(
                 route = next(routes)
                 for index in range(buses_per_route):
                     send_channel, _ = random.choice(channels)
-                    bus_id = emulator_id + generate_bus_id(route_id=route["name"], bus_index=index)
-                    nursery.start_soon(run_bus, send_channel, route, bus_id, refresh_timeout)
-                    logger.debug(f"Place new bus #{index} on the map. Route {route['name']}")
+                    bus_id = emulator_id + generate_bus_id(
+                        route_id=route["name"], bus_index=index
+                    )
+                    nursery.start_soon(
+                        run_bus, send_channel, route, bus_id, refresh_timeout
+                    )
+                    logger.debug(
+                        f"Place new bus #{index} on the map. Route {route['name']}"
+                    )
         except StopIteration:
             logger.info("Запущены все возможные маршруты")
 
@@ -104,4 +115,3 @@ if __name__ == "__main__":
         logger.critical("Не удалось соединиться с сервером")
     except* KeyboardInterrupt as e:
         logger.info("Скрипт остановлен")
-

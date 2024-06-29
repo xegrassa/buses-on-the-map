@@ -12,7 +12,7 @@ EMPTY_JSON = "{}"
 
 async def main():
     try:
-        async with open_websocket_url("ws://127.0.0.1:8001") as ws:
+        async with open_websocket_url("ws://127.0.0.1:8080") as ws:
             await ws.send_message(INVALID_JSON)
             await ws.send_message(EMPTY_JSON)
 
