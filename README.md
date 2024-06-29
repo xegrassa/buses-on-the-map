@@ -8,8 +8,8 @@
 
 - Склонируйте репозиторий
 - `pip install -r requirements.txt`
-- `python server.py`
-- `python fake_bus.py`
+- `python3 server.py`
+- `python3 fake_bus.py`
 - Откройте в браузере файл index.html
 
 ## Настройки
